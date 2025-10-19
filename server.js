@@ -11,10 +11,10 @@ app.use(express.json());
 
 const uri = process.env.MONGO_URI;
 
-// --- [FIX] Add TLS options to MongoClient to solve SSL connection issues ---
+// --- [FINAL FIX] Explicitly set TLS version to 1.2 ---
 const client = new MongoClient(uri, {
     tls: true,
-    tlsAllowInvalidCertificates: true, // This helps bypass certain SSL errors on platforms like Render
+    tlsVersion: 'TLSv1.2', // Force TLS version 1.2
 });
 
 async function run() {
@@ -25,10 +25,10 @@ async function run() {
         const bookingsCollection = database.collection("bookings");
         const carsCollection = database.collection("cars");
 
-        console.log("Successfully connected to MongoDB Atlas!");
+        console.log("Successfully connected to MongoDB Atlas using TLSv1.2!");
 
         // --- API Endpoints ---
-        // All API endpoints (login, status, bookings, etc.) remain the same as the previous full version.
+        
         // POST /api/login
         app.post('/api/login', async (req, res) => {
             try {
@@ -94,7 +94,7 @@ async function run() {
             }
         });
 
-        // Other endpoints ...
+        // GET /api/cars
         app.get('/api/cars', async (req, res) => {
              try {
                 const cars = await carsCollection.find({}).toArray();
@@ -105,6 +105,7 @@ async function run() {
             }
         });
         
+        // GET /api/bookings/car/:carName
         app.get('/api/bookings/car/:carName', async (req, res) => {
              try {
                 const { carName } = req.params;
@@ -116,6 +117,7 @@ async function run() {
             }
         });
 
+        // POST /api/bookings
         app.post('/api/bookings', async (req, res) => {
             try {
                 const { name, bookerName, startMileage, startDateTime, endDateTime, bookerEmail } = req.body;
@@ -146,6 +148,7 @@ async function run() {
             }
         });
         
+        // GET /api/history/:email
         app.get('/api/history/:email', async (req, res) => {
             try {
                 const { email } = req.params;
@@ -157,6 +160,7 @@ async function run() {
             }
         });
         
+        // PATCH /api/bookings/:id/start
         app.patch('/api/bookings/:id/start', async (req, res) => {
             try {
                 const { id } = req.params;
@@ -177,6 +181,7 @@ async function run() {
             }
         });
 
+        // PATCH /api/bookings/:id/complete
         app.patch('/api/bookings/:id/complete', async (req, res) => {
             try {
                 const { id } = req.params;
@@ -199,6 +204,7 @@ async function run() {
             }
         });
 
+        // PATCH /api/bookings/:id/extend
         app.patch('/api/bookings/:id/extend', async (req, res) => {
             try {
                 const { id } = req.params;
