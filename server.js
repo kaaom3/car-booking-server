@@ -13,9 +13,13 @@ const uri = process.env.MONGO_URI;
 
 // --- [FINAL FIX] Explicitly set TLS version to 1.2 ---
 const client = new MongoClient(uri, {
-    tls: true,
-    tlsVersion: 'TLSv1.2', // Force TLS version 1.2
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  tls: true,
 });
+
+await client.connect();
+const db = client.db("CarBookingDB");
 
 async function run() {
     try {
