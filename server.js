@@ -11,11 +11,8 @@ app.use(express.json());
 
 const uri = process.env.MONGO_URI;
 
-// --- [FINAL FIX] Explicitly set TLS version to 1.2 ---
-const client = new MongoClient(uri, {
-    tls: true,
-    tlsVersion: 'TLSv1.2', // Force TLS version 1.2
-});
+// --- [FINAL FIX] Removed all extra options. The fix is in package.json ---
+const client = new MongoClient(uri);
 
 async function run() {
     try {
@@ -25,7 +22,7 @@ async function run() {
         const bookingsCollection = database.collection("bookings");
         const carsCollection = database.collection("cars");
 
-        console.log("Successfully connected to MongoDB Atlas using TLSv1.2!");
+        console.log("Successfully connected to MongoDB Atlas!");
 
         // --- API Endpoints ---
         
